@@ -43,27 +43,38 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/blaybrigidi/mqtt-subscriber.git
 cd mqtt-subscriber
 ```
 
 ### 2. Create your environment file
 
-The service reads sensitive values (credentials, URLs) from a `.env` file in the project root. Create one by copying the template below:
+The service reads all of its configuration from a `.env` file in the project root. A template is included in the repository:
 
 ```bash
-touch .env
+cp .env.example .env
 ```
 
-Then open it and fill in the values:
+Then open `.env` and fill in the real values:
 
 ```env
 RUST_TO_MODEL_KEY=your_secret_key_here
+
+MQTT_HOST=your_hivemq_host_here
+MQTT_PORT=8883
+MQTT_CLIENT_ID=your_client_id_here
+MQTT_USERNAME=your_mqtt_username_here
+MQTT_PASSWORD=your_mqtt_password_here
+
+USER_ID=your_patient_user_id_here
+
+MODEL_URL=http://localhost:8000/predict
+DATABASE_URL=https://your-project.firebasedatabase.app
 ```
 
 > The `.env` file is listed in `.gitignore` and will never be committed to the repository. Keep it out of version control and never share it publicly.
 
-A full description of every variable is in the [Manual](MANUAL.md#environment-variables).
+A description of every variable is in the [Manual](MANUAL.md#environment-variables).
 
 ### 3. Build the project
 

@@ -45,25 +45,19 @@ The service does not make predictions itself. It is purely a data pipeline — i
 
 ## Environment Variables
 
-The service reads its configuration from a `.env` file in the project root. Create this file before running the service. It is never committed to the repository.
+All configuration is read from a `.env` file in the project root. Copy `.env.example` to `.env` and fill in the values. The file is never committed to the repository.
 
 | Variable | Description |
 |---|---|
 | `RUST_TO_MODEL_KEY` | A secret key sent with every request to the prediction model to prove the request is coming from this service and not an outside caller. |
-
-The following values are currently hardcoded in `src/main.rs` but are listed here for reference. They can be moved to `.env` in a future update:
-
-| Setting | Current Value | Description |
-|---|---|---|
-| Model URL | `http://localhost:8000/predict` | Where the prediction model is running |
-| Database URL | `https://diallog-78c08-default-rtdb.europe-west1.firebasedatabase.app` | Firebase project |
-| Patient ID | `GYj2b0AQmhZPECB7lAKLGNDYX2k2` | The patient this instance serves |
-| MQTT Host | `35048523647747189040301dcfbe034d.s1.eu.hivemq.cloud` | HiveMQ cloud broker |
-| MQTT Port | `8883` | Standard port for encrypted MQTT |
-| MQTT Username | `ama_annor` | Broker login |
-| MQTT Password | `Amaannorrocks12` | Broker password |
-
-> **Security note:** The MQTT credentials are currently written directly in the source code. For a production deployment, these should be moved to `.env` so they are not visible in the codebase.
+| `MQTT_HOST` | The address of the HiveMQ cloud messaging server. |
+| `MQTT_PORT` | The port to connect on — `8883` is standard for encrypted MQTT. |
+| `MQTT_CLIENT_ID` | A unique name for this connection on the messaging server. |
+| `MQTT_USERNAME` | Username to log in to the messaging server. |
+| `MQTT_PASSWORD` | Password to log in to the messaging server. |
+| `USER_ID` | The patient's unique ID — used to subscribe to their channel and store readings under their folder in the database. |
+| `MODEL_URL` | The full address of the prediction model endpoint (e.g. `http://localhost:8000/predict`). |
+| `DATABASE_URL` | The base URL of the Firebase Realtime Database where readings are stored. |
 
 ---
 
@@ -258,7 +252,7 @@ journalctl -u vitals-subscriber -f
 The service is connected but no readings are arriving. Check that:
 - The sensor/publishing device is powered on and connected to the internet
 - The sensor is publishing to the correct topic (`vitals/<patient-id>`)
-- The patient ID in `main.rs` matches what the sensor is using
+- The `USER_ID` in your `.env` matches the patient ID the sensor is publishing under
 
 ---
 
@@ -276,7 +270,7 @@ RUST_TO_MODEL_KEY=your_key_here
 
 The service could not connect to HiveMQ. Check:
 - Your internet connection
-- That the MQTT credentials in `main.rs` are correct
+- That `MQTT_HOST`, `MQTT_USERNAME`, and `MQTT_PASSWORD` in your `.env` are correct
 - That port `8883` is not blocked by a firewall
 
 ---
@@ -284,14 +278,14 @@ The service could not connect to HiveMQ. Check:
 **Firebase writes are failing (`Firebase write error: ...`)**
 
 - Check your internet connection
-- Verify the Firebase database URL in `main.rs` is correct
+- Verify the `DATABASE_URL` in your `.env` is correct
 - Confirm the Firebase Realtime Database security rules allow writes to `/patient_data`
 
 ---
 
 **Predictions are not coming through (`Error sending request`)**
 
-The prediction model is not running or is not reachable on `http://localhost:8000/predict`. Start the model service first, then restart this service.
+The prediction model is not running or is not reachable at the address set in `MODEL_URL`. Start the model service first, then restart this service.
 
 ---
 
@@ -309,9 +303,7 @@ These are areas where the current implementation has known gaps. They are not bu
 
 | Limitation | Impact | Notes |
 |---|---|---|
-| MQTT credentials are hardcoded in source code | Credentials are visible to anyone with access to the repository | Move them to `.env` |
 | Firebase has no authentication | Anyone who knows the database URL could write to it | Add Firebase Auth or tighten security rules |
 | No retry logic | Failed Firebase writes or model calls are lost permanently | Consider a local queue for retries |
-| One patient per instance | The service is hardcoded to a single patient ID | Move `user_id` to `.env` to make it configurable |
 | Model predictions are only logged | The prediction result is printed but not stored or acted on | A future version could write predictions to Firebase or trigger alerts |
 | Window resets on restart | After a restart, 12 readings must arrive before predictions resume | Acceptable in practice given typical sensor frequency |

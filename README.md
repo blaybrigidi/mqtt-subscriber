@@ -109,7 +109,7 @@ Or run the compiled binary directly:
 You should see output like:
 
 ```
-Subscribed to topic 'vitals/GYj2b0AQmhZPECB7lAKLGNDYX2k2'
+Subscribed to topic 'vitals/<your-user-id>'
 [RECV] hr=72.4 beat_count=8 esp_millis=1234567
 Firebase write [200]: ...
 Response [200]: {"prediction": ...}

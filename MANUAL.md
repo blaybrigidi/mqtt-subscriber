@@ -15,7 +15,6 @@ This manual covers everything you need to run, understand, and maintain the Vita
 7. [Deploying to a Server](#deploying-to-a-server)
 8. [Running as a Background Service](#running-as-a-background-service)
 9. [Troubleshooting](#troubleshooting)
-10. [Known Limitations](#known-limitations)
 
 ---
 
@@ -297,13 +296,3 @@ Occasional reconnections are normal. If it is happening every few seconds, check
 
 ---
 
-## Known Limitations
-
-These are areas where the current implementation has known gaps. They are not bugs but rather starting points for future improvement.
-
-| Limitation | Impact | Notes |
-|---|---|---|
-| Firebase has no authentication | Anyone who knows the database URL could write to it | Add Firebase Auth or tighten security rules |
-| No retry logic | Failed Firebase writes or model calls are lost permanently | Consider a local queue for retries |
-| Model predictions are only logged | The prediction result is printed but not stored or acted on | A future version could write predictions to Firebase or trigger alerts |
-| Window resets on restart | After a restart, 12 readings must arrive before predictions resume | Acceptable in practice given typical sensor frequency |

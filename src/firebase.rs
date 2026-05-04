@@ -4,9 +4,7 @@ use crate::sensor_readings::SensorReading;
 
 // Saves a single sensor reading to the cloud database under the patient's folder.
 // Each reading gets its own unique ID so entries never overwrite each other.
-pub async fn send_to_firebase(reading: &SensorReading, host_url: &str, user_id: &str) {
-    let client = Client::new();
-
+pub async fn send_to_firebase(client: &Client, reading: &SensorReading, host_url: &str, user_id: &str) {
     // Generate a unique ID for this reading so it gets its own slot in the database
     let reading_id = Uuid::new_v4().to_string();
 

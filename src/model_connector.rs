@@ -3,9 +3,7 @@ use crate::sensor_readings::{SensorReading, ModelInput};
 
 // Sends the last 12 sensor readings to the prediction model and prints the result.
 // The secret key in the header proves this request is coming from our own service.
-pub async fn send_batch_reading(buffer: &[SensorReading], host: &str, key: &str, patient_id: &str) {
-    let client = Client::new();
-
+pub async fn send_batch_reading(client: &Client, buffer: &[SensorReading], host: &str, key: &str, patient_id: &str) {
     // Bundle the patient ID and the readings into a single package for the model
     let payload = ModelInput {
         patient_id: patient_id.to_string(),

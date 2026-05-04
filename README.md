@@ -4,6 +4,8 @@ A background service that listens for real-time health readings from a wearable 
 
 This is part of the **Diallog** diabetes monitoring system. The sensor on the patient's body sends heart rate and temperature data continuously. This service is the always-on receiver that makes sure nothing gets lost and that the prediction model stays fed.
 
+The service is deployed and hosted on **[Render](https://render.com)**, where it runs as a continual subscriber — meaning it stays connected and listening around the clock without needing to be manually started or restarted.
+
 ---
 
 ## What It Does
@@ -136,6 +138,7 @@ mqtt-subscriber/
 
 | Service | What it does |
 |---|---|
+| Render | Hosts and runs this service continuously in the cloud |
 | HiveMQ Cloud | The messaging server the sensor publishes to — this service listens here |
 | Firebase Realtime Database | Cloud storage where every reading is permanently saved |
 | Local ML model (`localhost:8000`) | The prediction model that analyses batches of readings |
